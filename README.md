@@ -77,6 +77,26 @@ PS C:\Users\you\doubao-audio-to-text-batch-transcriber> python .\doubao_batch_tr
 Finished. success=3, skipped=0, failed=0, log=C:\Users\you\doubao-audio-to-text-batch-transcriber\output\transcribe_results.jsonl
 ```
 
+## 真实截图
+
+### 下载后目录结构
+
+用户下载仓库后，直接把音频复制到 `input/`，结果会输出到 `output/`。
+
+![项目目录截图](assets/screenshots/demo-project.png)
+
+### 运行中的批量转写
+
+双击 `run_transcribe.bat` 或执行 Python 命令后，终端会逐个显示处理状态。
+
+![运行过程截图](assets/screenshots/demo-running.png)
+
+### 转写完成后的结果
+
+处理完成后，可以直接在 `output/` 中看到同名 `.txt` 结果和日志。
+
+![输出结果截图](assets/screenshots/demo-output.png)
+
 ## 获取 API Key
 
 如果你还没有豆包语音的 API Key，直接去这里：
