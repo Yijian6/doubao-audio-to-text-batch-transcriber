@@ -1,0 +1,67 @@
+<svg width="1600" height="760" viewBox="0 0 1600 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="760" fill="#F6F8FC"/>
+  <rect x="48" y="48" width="1504" height="664" rx="28" fill="#0F1728"/>
+  <rect x="48" y="48" width="1504" height="664" rx="28" stroke="#1D2939" stroke-width="2"/>
+
+  <text x="110" y="170" fill="#FFFFFF" font-family="Segoe UI, Arial, sans-serif" font-size="58" font-weight="700">
+    Doubao Audio to Text
+  </text>
+  <text x="110" y="235" fill="#D0D5DD" font-family="Segoe UI, Arial, sans-serif" font-size="34">
+    Batch Transcriber
+  </text>
+  <text x="110" y="305" fill="#98A2B3" font-family="Segoe UI, Arial, sans-serif" font-size="26">
+    把本地音频文件夹，直接批量转成文字稿
+  </text>
+
+  <rect x="110" y="360" width="220" height="54" rx="14" fill="#FFFFFF"/>
+  <text x="142" y="395" fill="#101828" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">
+    Local Audio In
+  </text>
+
+  <rect x="354" y="360" width="220" height="54" rx="14" fill="#1D2939" stroke="#344054" stroke-width="2"/>
+  <text x="388" y="395" fill="#F9FAFB" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">
+    Plain Text Out
+  </text>
+
+  <rect x="110" y="455" width="490" height="150" rx="20" fill="#111827" stroke="#344054" stroke-width="2"/>
+  <text x="145" y="510" fill="#F9FAFB" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700">
+    核心使用路径
+  </text>
+  <text x="145" y="555" fill="#D0D5DD" font-family="Segoe UI, Arial, sans-serif" font-size="22">
+    1. 把音频复制到 input/
+  </text>
+  <text x="145" y="590" fill="#D0D5DD" font-family="Segoe UI, Arial, sans-serif" font-size="22">
+    2. 填好 config.json
+  </text>
+  <text x="145" y="625" fill="#D0D5DD" font-family="Segoe UI, Arial, sans-serif" font-size="22">
+    3. 运行一次，结果输出到 output/
+  </text>
+
+  <rect x="860" y="120" width="570" height="520" rx="26" fill="#FFFFFF"/>
+  <rect x="860" y="120" width="570" height="520" rx="26" stroke="#D0D5DD" stroke-width="2"/>
+
+  <text x="900" y="185" fill="#101828" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="700">
+    处理结果预览
+  </text>
+
+  <rect x="900" y="225" width="200" height="290" rx="16" fill="#F8FAFC" stroke="#D0D5DD" stroke-width="2"/>
+  <text x="935" y="270" fill="#101828" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">input/</text>
+  <text x="935" y="320" fill="#344054" font-family="Consolas, monospace" font-size="18">interview.mp3</text>
+  <text x="935" y="355" fill="#344054" font-family="Consolas, monospace" font-size="18">meeting.m4a</text>
+  <text x="935" y="390" fill="#344054" font-family="Consolas, monospace" font-size="18">lecture.wav</text>
+
+  <path d="M1130 370H1180" stroke="#667085" stroke-width="8" stroke-linecap="round"/>
+  <path d="M1160 345L1190 370L1160 395" stroke="#667085" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <rect x="1210" y="225" width="180" height="290" rx="16" fill="#101828"/>
+  <text x="1246" y="270" fill="#FFFFFF" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">Doubao</text>
+  <text x="1240" y="305" fill="#D0D5DD" font-family="Segoe UI, Arial, sans-serif" font-size="20">Flash API</text>
+  <text x="1240" y="365" fill="#EAECF0" font-family="Segoe UI, Arial, sans-serif" font-size="18">本地直传</text>
+  <text x="1240" y="400" fill="#EAECF0" font-family="Segoe UI, Arial, sans-serif" font-size="18">批量处理</text>
+  <text x="1240" y="435" fill="#EAECF0" font-family="Segoe UI, Arial, sans-serif" font-size="18">输出 txt</text>
+
+  <rect x="900" y="545" width="490" height="54" rx="14" fill="#ECFDF3" stroke="#ABEFC6" stroke-width="2"/>
+  <text x="930" y="580" fill="#067647" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">
+    下载后就能直接把音频放进 input/ 开始使用
+  </text>
+</svg>

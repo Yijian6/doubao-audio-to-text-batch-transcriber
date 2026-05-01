@@ -1,58 +1,58 @@
-<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="1600" height="900" fill="#F5F7FB"/>
-  <rect x="90" y="120" width="1420" height="660" rx="24" fill="white"/>
-  <rect x="90" y="120" width="1420" height="660" rx="24" stroke="#D7DDEA" stroke-width="2"/>
+<svg width="1600" height="860" viewBox="0 0 1600 860" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="860" fill="#F5F7FB"/>
+  <rect x="90" y="90" width="1420" height="660" rx="24" fill="white"/>
+  <rect x="90" y="90" width="1420" height="660" rx="24" stroke="#D7DDEA" stroke-width="2"/>
 
-  <text x="130" y="190" fill="#101828" font-family="Segoe UI, Arial, sans-serif" font-size="40" font-weight="700">
+  <text x="130" y="165" fill="#101828" font-family="Segoe UI, Arial, sans-serif" font-size="40" font-weight="700">
     Doubao Audio to Text Batch Transcriber
   </text>
-  <text x="130" y="235" fill="#475467" font-family="Segoe UI, Arial, sans-serif" font-size="24">
+  <text x="130" y="210" fill="#475467" font-family="Segoe UI, Arial, sans-serif" font-size="24">
     本地音频进，文字稿出
   </text>
 
-  <rect x="140" y="320" width="340" height="280" rx="20" fill="#F8FAFC" stroke="#D0D5DD" stroke-width="2"/>
-  <text x="170" y="380" fill="#101828" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="700">
+  <rect x="140" y="270" width="340" height="280" rx="20" fill="#F8FAFC" stroke="#D0D5DD" stroke-width="2"/>
+  <text x="170" y="330" fill="#101828" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="700">
     1. 输入目录
   </text>
-  <text x="170" y="435" fill="#344054" font-family="Consolas, monospace" font-size="24">input/</text>
-  <text x="170" y="480" fill="#344054" font-family="Consolas, monospace" font-size="24">- interview.mp3</text>
-  <text x="170" y="520" fill="#344054" font-family="Consolas, monospace" font-size="24">- meeting.m4a</text>
-  <text x="170" y="560" fill="#344054" font-family="Consolas, monospace" font-size="24">- lecture.wav</text>
+  <text x="170" y="385" fill="#344054" font-family="Consolas, monospace" font-size="24">input/</text>
+  <text x="170" y="430" fill="#344054" font-family="Consolas, monospace" font-size="24">- interview.mp3</text>
+  <text x="170" y="470" fill="#344054" font-family="Consolas, monospace" font-size="24">- meeting.m4a</text>
+  <text x="170" y="510" fill="#344054" font-family="Consolas, monospace" font-size="24">- lecture.wav</text>
 
-  <rect x="630" y="290" width="340" height="340" rx="24" fill="#111827"/>
-  <text x="680" y="380" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="32" font-weight="700">
+  <rect x="630" y="240" width="340" height="340" rx="24" fill="#111827"/>
+  <text x="680" y="330" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="32" font-weight="700">
     Doubao ASR
   </text>
-  <text x="680" y="430" fill="#D0D5DD" font-family="Segoe UI, Arial, sans-serif" font-size="24">
+  <text x="680" y="380" fill="#D0D5DD" font-family="Segoe UI, Arial, sans-serif" font-size="24">
     极速版 API
   </text>
-  <text x="680" y="490" fill="#EAECF0" font-family="Segoe UI, Arial, sans-serif" font-size="22">
+  <text x="680" y="440" fill="#EAECF0" font-family="Segoe UI, Arial, sans-serif" font-size="22">
     - 本地文件直传
   </text>
-  <text x="680" y="530" fill="#EAECF0" font-family="Segoe UI, Arial, sans-serif" font-size="22">
+  <text x="680" y="480" fill="#EAECF0" font-family="Segoe UI, Arial, sans-serif" font-size="22">
     - 批量处理
   </text>
-  <text x="680" y="570" fill="#EAECF0" font-family="Segoe UI, Arial, sans-serif" font-size="22">
+  <text x="680" y="520" fill="#EAECF0" font-family="Segoe UI, Arial, sans-serif" font-size="22">
     - 输出纯文本
   </text>
 
-  <rect x="1120" y="320" width="340" height="280" rx="20" fill="#F8FAFC" stroke="#D0D5DD" stroke-width="2"/>
-  <text x="1150" y="380" fill="#101828" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="700">
+  <rect x="1120" y="270" width="340" height="280" rx="20" fill="#F8FAFC" stroke="#D0D5DD" stroke-width="2"/>
+  <text x="1150" y="330" fill="#101828" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="700">
     2. 输出目录
   </text>
-  <text x="1150" y="435" fill="#344054" font-family="Consolas, monospace" font-size="24">output/</text>
-  <text x="1150" y="480" fill="#344054" font-family="Consolas, monospace" font-size="24">- interview.txt</text>
-  <text x="1150" y="520" fill="#344054" font-family="Consolas, monospace" font-size="24">- meeting.txt</text>
-  <text x="1150" y="560" fill="#344054" font-family="Consolas, monospace" font-size="24">- lecture.txt</text>
+  <text x="1150" y="385" fill="#344054" font-family="Consolas, monospace" font-size="24">output/</text>
+  <text x="1150" y="430" fill="#344054" font-family="Consolas, monospace" font-size="24">- interview.txt</text>
+  <text x="1150" y="470" fill="#344054" font-family="Consolas, monospace" font-size="24">- meeting.txt</text>
+  <text x="1150" y="510" fill="#344054" font-family="Consolas, monospace" font-size="24">- lecture.txt</text>
 
-  <path d="M500 460H590" stroke="#667085" stroke-width="10" stroke-linecap="round"/>
-  <path d="M560 430L610 460L560 490" stroke="#667085" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M500 410H590" stroke="#667085" stroke-width="10" stroke-linecap="round"/>
+  <path d="M560 380L610 410L560 440" stroke="#667085" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
 
-  <path d="M990 460H1080" stroke="#667085" stroke-width="10" stroke-linecap="round"/>
-  <path d="M1050 430L1100 460L1050 490" stroke="#667085" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M990 410H1080" stroke="#667085" stroke-width="10" stroke-linecap="round"/>
+  <path d="M1050 380L1100 410L1050 440" stroke="#667085" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
 
-  <rect x="560" y="690" width="500" height="54" rx="12" fill="#ECFDF3" stroke="#ABEFC6" stroke-width="2"/>
-  <text x="604" y="725" fill="#067647" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="600">
-    一条命令或一次双击即可批量运行
+  <rect x="520" y="650" width="560" height="54" rx="12" fill="#ECFDF3" stroke="#ABEFC6" stroke-width="2"/>
+  <text x="554" y="685" fill="#067647" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="600">
+    下载后把音频放进 input/，运行一次即可批量得到 txt
   </text>
 </svg>
