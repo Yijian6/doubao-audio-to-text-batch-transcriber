@@ -106,6 +106,10 @@ Finished. success=3, skipped=0, failed=0, log=C:\Users\you\doubao-audio-to-text-
 
 拿到 API Key 后，填进本地 `config.json` 里的 `api_key` 字段即可。
 
+控制台里你要找的页面大致是这样：
+
+![API Key 控制台截图](assets/screenshots/demo-apikey.png)
+
 如果你想看接口文档，再看这里：
 
 - 极速版文档：https://www.volcengine.com/docs/6561/1631584?lang=zh

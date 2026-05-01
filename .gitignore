@@ -6,5 +6,6 @@ output/*
 __pycache__/
 *.pyc
 assets/*.mp4
+assets/Snipaste_*.png
 assets/screenshots/shot-*.png
 assets/screenshots/contact-sheet.png
