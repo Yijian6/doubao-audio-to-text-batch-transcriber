@@ -1,0 +1,28 @@
+<svg width="1600" height="960" viewBox="0 0 1600 960" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="960" fill="#F5F7FB"/>
+  <rect x="80" y="70" width="1440" height="820" rx="24" fill="white" stroke="#D0D5DD" stroke-width="2"/>
+  <text x="120" y="145" fill="#101828" font-family="Segoe UI, Arial, sans-serif" font-size="42" font-weight="700">步骤 3：查看输出结果</text>
+  <text x="120" y="190" fill="#475467" font-family="Segoe UI, Arial, sans-serif" font-size="24">每个音频会生成一个同名 txt，目录结构保持一致。</text>
+
+  <rect x="120" y="240" width="560" height="590" rx="18" fill="#FCFCFD" stroke="#D0D5DD" stroke-width="2"/>
+  <text x="155" y="290" fill="#101828" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">output/</text>
+  <text x="165" y="350" fill="#344054" font-family="Consolas, monospace" font-size="26">|- Episode-01.txt</text>
+  <text x="165" y="395" fill="#344054" font-family="Consolas, monospace" font-size="26">|- Meeting-Notes.txt</text>
+  <text x="165" y="440" fill="#344054" font-family="Consolas, monospace" font-size="26">|- archive/</text>
+  <text x="195" y="485" fill="#344054" font-family="Consolas, monospace" font-size="26">`- Lecture.txt</text>
+  <text x="165" y="530" fill="#344054" font-family="Consolas, monospace" font-size="26">`- transcribe_results.jsonl</text>
+
+  <rect x="760" y="240" width="720" height="590" rx="18" fill="#0B1220"/>
+  <circle cx="795" cy="275" r="8" fill="#F97066"/>
+  <circle cx="820" cy="275" r="8" fill="#FEC84B"/>
+  <circle cx="845" cy="275" r="8" fill="#32D583"/>
+  <text x="885" y="283" fill="#98A2B3" font-family="Consolas, monospace" font-size="22">Episode-01.txt</text>
+  <text x="800" y="345" fill="#F9FAFB" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="600">示例转写结果</text>
+  <text x="800" y="405" fill="#D0D5DD" font-family="Consolas, monospace" font-size="24">大家好，欢迎来到今天的节目。</text>
+  <text x="800" y="445" fill="#D0D5DD" font-family="Consolas, monospace" font-size="24">这一期我们聊的是如何把本地音频批量转成文字稿。</text>
+  <text x="800" y="485" fill="#D0D5DD" font-family="Consolas, monospace" font-size="24">整个流程其实很简单：准备 API Key，放入音频，运行工具。</text>
+  <text x="800" y="525" fill="#D0D5DD" font-family="Consolas, monospace" font-size="24">如果你需要长期使用，再把它升级成图形界面会更合适。</text>
+
+  <rect x="800" y="615" width="510" height="56" rx="12" fill="#ECFDF3" stroke="#ABEFC6" stroke-width="2"/>
+  <text x="835" y="650" fill="#067647" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="600">输出是纯文本，适合后续整理、搜索、总结和二次处理</text>
+</svg>

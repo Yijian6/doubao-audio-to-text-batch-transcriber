@@ -1,26 +1,40 @@
 # Doubao Audio to Text Batch Transcriber
 
-Batch transcribe a folder of local audio files into `.txt` files with the Doubao speech recognition API.
+把一个文件夹里的本地音频，批量转成 `.txt` 文字稿。
 
-This project is built for a simple job:
+这个项目基于豆包语音识别 API，适合下面这类场景：
 
-- put audio files into one folder
-- run one command or double-click one launcher
-- get text transcripts in another folder
+- 采访录音转文字
+- 会议录音整理
+- 播客音频转稿
+- 课程录音转写
+- 语音备忘录批量处理
 
-It is a good fit for:
+它的目标很直接：
 
-- interview recordings
-- meeting audio
-- podcast clips
-- lecture recordings
-- voice notes
+1. 你把音频放进 `input/`
+2. 你运行一次脚本，或者双击一次 `.bat`
+3. 你在 `output/` 里拿到同名 `.txt`
+
+## 先拿 API Key
+
+如果你还没有豆包语音的 API Key，先看官方入口：
+
+- 豆包语音新版控制台快速入门：https://www.volcengine.com/docs/6561/2119699?lang=zh
+- 豆包语音 API Key 使用文档：https://www.volcengine.com/docs/6561/1816214?lang=zh
+- 火山引擎控制台：https://console.volcengine.com/
+
+说明：
+
+- 这个项目当前走的是豆包语音的录音文件 `极速版` 接口
+- 官方接口文档：https://www.volcengine.com/docs/6561/1631584?lang=zh
+- 官方标准版文档：https://www.volcengine.com/docs/6561/1354868?lang=zh
+
+根据官方文档，`极速版` 支持直接上传本地音频内容，不要求你先把音频放到公网 URL。
 
 ## Demo
 
-### What it does
-
-`input/`
+### 使用前
 
 ```text
 input/
@@ -30,9 +44,7 @@ input/
    `- Lecture.wav
 ```
 
-Run the tool once, then get:
-
-`output/`
+### 使用后
 
 ```text
 output/
@@ -43,7 +55,7 @@ output/
 `- transcribe_results.jsonl
 ```
 
-### Example terminal output
+### 运行示例
 
 ```powershell
 PS C:\Users\you\doubao-audio-to-text-batch-transcriber> python .\doubao_batch_transcribe.py .\input .\output --api-key "your-api-key" --recursive
@@ -56,86 +68,88 @@ PS C:\Users\you\doubao-audio-to-text-batch-transcriber> python .\doubao_batch_tr
 Finished. success=3, skipped=0, failed=0, log=C:\Users\you\doubao-audio-to-text-batch-transcriber\output\transcribe_results.jsonl
 ```
 
-### Workflow
+## 实际流程示意
 
-![Workflow](assets/workflow.svg)
+### 1. 配置 API Key 和目录
 
-## Features
+![配置示意](assets/step-config.svg)
 
-- Batch transcribe local audio files into `.txt`
-- Uses the Doubao recorded-audio flash API
-- No public audio URL required
-- Preserves subfolder structure in output
-- Supports recursive folder scanning
-- Supports retry on failure
-- Supports raw JSON response export
-- Supports command-line usage and double-click Windows usage
+### 2. 运行批量转写
 
-## Why this tool
+![运行示意](assets/step-run.svg)
 
-Many speech-to-text tools focus on live dictation, browser recording, or larger desktop apps.
+### 3. 查看输出结果
 
-This project focuses on one narrower workflow:
+![输出示意](assets/step-output.svg)
 
-1. you already have local audio files
-2. you want to call Doubao ASR directly
-3. you want plain transcript files in bulk
+### 总体流程
 
-That makes it useful as a simple utility, and also a clean base for a future GUI app.
+![流程图](assets/workflow.svg)
 
-## Quick Start
+## 这个工具能做什么
 
-### Requirements
+- 批量处理本地音频文件
+- 调用豆包语音识别 `极速版` API
+- 不需要公网音频 URL
+- 自动保留子目录结构
+- 支持递归扫描文件夹
+- 支持失败重试
+- 支持保存原始 JSON 返回
+- 支持命令行运行
+- 支持 Windows 双击启动
 
-- Windows, macOS, or Linux
+## 3 分钟跑通
+
+### 环境要求
+
+- Windows / macOS / Linux
 - Python 3.11+
-- A Doubao / Volcengine API key with speech recognition access
+- 一个可用的豆包语音 API Key
 
-Check Python:
+先确认 Python：
 
 ```powershell
 python --version
 ```
 
-## 3-Minute Setup
+### Windows 用户最快方式
 
-### Option 1: easiest for Windows users
+1. 下载或克隆本仓库
+2. 打开 `config.example.json`
+3. 复制一份为 `config.json`
+4. 把里面的占位 `api_key` 改成你自己的真实 key
+5. 把音频文件放进 `input/`
+6. 双击 `run_transcribe.bat`
+7. 到 `output/` 查看生成的 `.txt`
 
-1. Clone or download this repository
-2. Open `config.example.json`
-3. Copy it to `config.json`
-4. Replace the placeholder API key with your own key
-5. Put audio files into the `input` folder
-6. Double-click `run_transcribe.bat`
-7. Read transcripts from the `output` folder
-
-### Option 2: command line
+### 命令行方式
 
 ```powershell
 python .\doubao_batch_transcribe.py .\input .\output --api-key "your-api-key" --recursive
 ```
 
-## Repository Structure
+## 项目结构
 
 ```text
 .
-|- doubao_batch_transcribe.py   # main script
-|- run_transcribe.bat           # Windows launcher
-|- config.example.json          # shared config template
-|- config.json                  # local config, ignored by git
-|- input/                       # local input audio folder
-|- output/                      # local output transcript folder
+|- doubao_batch_transcribe.py   # 主脚本
+|- run_transcribe.bat           # Windows 双击启动器
+|- config.example.json          # 配置模板
+|- config.json                  # 本地私有配置，不进 git
+|- input/                       # 本地音频输入目录
+|- output/                      # 本地转写输出目录
 `- assets/
-   `- workflow.svg
+   |- workflow.svg
+   |- step-config.svg
+   |- step-run.svg
+   `- step-output.svg
 ```
 
-## Configuration
+## 配置说明
 
-### `config.json`
+推荐方式是把真实 API Key 放在本地 `config.json` 中。
 
-The recommended setup is to keep your real API key in a local `config.json`.
-
-Example:
+示例：
 
 ```json
 {
@@ -154,53 +168,53 @@ Example:
 }
 ```
 
-### Field reference
+字段解释：
 
-- `api_key`: API key for the newer auth path
-- `app_key` + `access_key`: older auth path, if your account uses it
-- `input_dir`: folder containing local audio files
-- `output_dir`: folder for generated `.txt` files
-- `resource_id`: default is `volc.bigasr.auc_turbo`
-- `extensions`: file extensions to scan
-- `recursive`: scan subfolders
-- `overwrite`: rewrite existing transcript files
-- `retries`: retry count when requests fail
-- `retry_wait`: delay between retries in seconds
-- `request_timeout`: request timeout in seconds
-- `language`: optional language hint such as `zh-CN` or `en-US`
-- `save_json`: save the raw API response next to the `.txt`
+- `api_key`：新版控制台认证方式
+- `app_key` + `access_key`：旧版控制台认证方式
+- `input_dir`：音频输入目录
+- `output_dir`：转写输出目录
+- `resource_id`：默认 `volc.bigasr.auc_turbo`
+- `extensions`：要扫描的音频扩展名
+- `recursive`：是否递归扫描子目录
+- `overwrite`：是否覆盖已有 `.txt`
+- `retries`：失败重试次数
+- `retry_wait`：重试等待秒数
+- `request_timeout`：接口请求超时秒数
+- `language`：可选语言提示，比如 `zh-CN`
+- `save_json`：是否保存接口原始 JSON
 
-## Usage
+## 用法
 
-### Use config file only
+### 只用配置文件运行
 
 ```powershell
 python .\doubao_batch_transcribe.py
 ```
 
-### Use command-line arguments
+### 指定命令行参数运行
 
 ```powershell
 python .\doubao_batch_transcribe.py .\input .\output --api-key "your-api-key" --recursive
 ```
 
-### Use another config file
+### 指定另一份配置文件
 
 ```powershell
 python .\doubao_batch_transcribe.py --config .\my_config.json
 ```
 
-### Old auth path
+### 旧版认证方式
 
 ```powershell
 python .\doubao_batch_transcribe.py .\input .\output --app-key "your-app-key" --access-key "your-access-key" --recursive
 ```
 
-Command-line arguments override values in `config.json`.
+命令行参数会覆盖 `config.json` 中的同名配置。
 
-## Supported Audio Formats
+## 支持的音频格式
 
-By default, the tool scans:
+默认会扫描这些扩展名：
 
 - `.mp3`
 - `.wav`
@@ -212,89 +226,83 @@ By default, the tool scans:
 - `.aac`
 - `.wma`
 
-## Output Rules
+## 输出规则
 
-- `input/demo.mp3` becomes `output/demo.txt`
-- subfolder structure is preserved
-- logs are appended to `output/transcribe_results.jsonl`
-- when `save_json` is enabled, raw API responses are saved beside the transcript
+- `input/demo.mp3` 会生成 `output/demo.txt`
+- 子目录结构会保留
+- 日志会追加写入 `output/transcribe_results.jsonl`
+- 开启 `save_json` 后，会额外保存原始接口返回
 
-## Security
+## 常见问题
 
-- `config.json` is ignored by git
-- your real API key should stay only in local `config.json`
-- do not commit `input/`, `output/`, or transcript logs to a public repository
-- if you ever paste a real API key into chat or a screenshot, rotate it immediately
+### 1. `unrecognized arguments`
 
-## API Notes
+通常是命令行参数拼错了。
 
-This project currently targets the Doubao recorded-audio flash API.
-
-That path is a good fit when:
-
-- your audio files are local
-- you want a direct upload workflow
-- you want a simpler batch pipeline
-
-Official docs:
-
-- Flash API: https://www.volcengine.com/docs/6561/1631584
-- Standard API: https://www.volcengine.com/docs/6561/1354868
-
-If you later need to support very long files, the standard API path may be a better fit, but it usually requires a public audio URL workflow.
-
-## Common Issues
-
-### `unrecognized arguments`
-
-One or more command-line options were typed incorrectly.
-
-Check available options:
+先看帮助：
 
 ```powershell
 python .\doubao_batch_transcribe.py --help
 ```
 
-### `Missing auth`
+### 2. `Missing auth`
 
-You did not provide valid auth values.
+说明你没有提供有效的认证信息。
 
-Fix one of these:
+检查：
 
-- set `api_key` in `config.json`
-- or provide `--api-key`
-- or provide both `--app-key` and `--access-key`
+- `config.json` 里是否有 `api_key`
+- 或者命令里是否传了 `--api-key`
+- 或者你是否同时传了 `--app-key` 和 `--access-key`
 
-### `No matching audio files found`
+### 3. `No matching audio files found`
 
-The input folder is empty, or the file extensions are not included in the configured `extensions` list.
+说明输入目录为空，或者扩展名不在当前配置的 `extensions` 里。
 
-### API request failed
+### 4. 请求失败
 
-Check:
+优先排查：
 
-- whether the API key is valid
-- whether the key has ASR access
-- whether the audio format is supported
-- whether the file is too large for the flash path
+- API Key 是否可用
+- 账号是否有豆包语音识别权限
+- 音频格式是否支持
+- 文件是否过大
 
-## Roadmap
+## 安全说明
 
-- better README screenshots and real demo samples
-- drag-and-drop desktop GUI
-- progress bar and clearer task states
-- transcript export formats such as `.srt`
-- long-audio fallback flow
-- packaging for non-technical users
+- `config.json` 已加入 `.gitignore`
+- 真实 API Key 只应该保存在你本地的 `config.json`
+- 不要把 `input/`、`output/`、日志文件提交到公开仓库
+- 如果你把真实 API Key 发到聊天、截图、Issue 或公开页面里，应该立刻去控制台重建
 
-## Development Notes
+## 为什么现在先做 README，而不是先做 GUI
 
-This repository is intentionally small and conservative:
+因为当前这个项目已经能稳定完成核心工作，先把公开页面做清楚，用户更容易：
 
-- no third-party Python dependency is required
-- the current goal is reliability and clarity
-- future UI work can build on the existing core transcription flow
+- 看懂它做什么
+- 直接拿去跑通
+- 判断它是否适合自己
+- 在 GitHub 搜索里找到它
+
+这一步做完，后面再做 GUI，传播效率会更高。
+
+## 后续计划
+
+- 补更多真实操作截图
+- 增加拖拽式桌面 GUI
+- 增加进度条和任务状态
+- 增加 `.srt` 等导出格式
+- 为长音频增加标准版流程
+- 做成更适合普通用户的桌面应用
+
+## 开发说明
+
+这个仓库目前保持得比较克制：
+
+- 不依赖第三方 Python 包
+- 先保证核心链路稳定
+- 后续 GUI 可以在现有转写核心上继续封装
 
 ## License
 
-No license file has been added yet.
+当前仓库还没有添加正式 License 文件。

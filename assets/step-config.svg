@@ -1,0 +1,32 @@
+<svg width="1600" height="960" viewBox="0 0 1600 960" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="960" fill="#F5F7FB"/>
+  <rect x="80" y="70" width="1440" height="820" rx="24" fill="white" stroke="#D0D5DD" stroke-width="2"/>
+  <text x="120" y="145" fill="#101828" font-family="Segoe UI, Arial, sans-serif" font-size="42" font-weight="700">步骤 1：配置 API Key 和目录</text>
+  <text x="120" y="190" fill="#475467" font-family="Segoe UI, Arial, sans-serif" font-size="24">先复制 config.example.json，再填入你自己的 API Key。</text>
+
+  <rect x="120" y="240" width="1360" height="590" rx="18" fill="#0B1220"/>
+  <circle cx="155" cy="275" r="8" fill="#F97066"/>
+  <circle cx="180" cy="275" r="8" fill="#FEC84B"/>
+  <circle cx="205" cy="275" r="8" fill="#32D583"/>
+  <text x="245" y="283" fill="#98A2B3" font-family="Consolas, monospace" font-size="22">config.json</text>
+
+  <text x="160" y="345" fill="#D0D5DD" font-family="Consolas, monospace" font-size="28">{</text>
+  <text x="190" y="395" fill="#9B8AFB" font-family="Consolas, monospace" font-size="28">"api_key"</text>
+  <text x="330" y="395" fill="#D0D5DD" font-family="Consolas, monospace" font-size="28">:</text>
+  <text x="355" y="395" fill="#6CE9A6" font-family="Consolas, monospace" font-size="28">"你的豆包语音 API Key"</text>
+  <text x="160" y="445" fill="#98A2B3" font-family="Consolas, monospace" font-size="28">"input_dir": "input",</text>
+  <text x="160" y="495" fill="#98A2B3" font-family="Consolas, monospace" font-size="28">"output_dir": "output",</text>
+  <text x="160" y="545" fill="#98A2B3" font-family="Consolas, monospace" font-size="28">"recursive": true,</text>
+  <text x="160" y="595" fill="#98A2B3" font-family="Consolas, monospace" font-size="28">"overwrite": false,</text>
+  <text x="160" y="645" fill="#98A2B3" font-family="Consolas, monospace" font-size="28">"save_json": false</text>
+  <text x="160" y="700" fill="#D0D5DD" font-family="Consolas, monospace" font-size="28">}</text>
+
+  <rect x="980" y="345" width="410" height="210" rx="16" fill="#111827" stroke="#344054" stroke-width="2"/>
+  <text x="1010" y="395" fill="#F9FAFB" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">拿 Key 的位置</text>
+  <text x="1010" y="440" fill="#D0D5DD" font-family="Segoe UI, Arial, sans-serif" font-size="22">1. 打开火山引擎控制台</text>
+  <text x="1010" y="475" fill="#D0D5DD" font-family="Segoe UI, Arial, sans-serif" font-size="22">2. 进入豆包语音</text>
+  <text x="1010" y="510" fill="#D0D5DD" font-family="Segoe UI, Arial, sans-serif" font-size="22">3. 查看或创建 API Key</text>
+
+  <rect x="120" y="760" width="510" height="54" rx="12" fill="#ECFDF3" stroke="#ABEFC6" stroke-width="2"/>
+  <text x="150" y="795" fill="#067647" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="600">真实 API Key 只放本地 config.json，不要提交到 GitHub</text>
+</svg>
