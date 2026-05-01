@@ -97,6 +97,19 @@ Finished. success=3, skipped=0, failed=0, log=C:\Users\you\doubao-audio-to-text-
 
 ![输出结果截图](assets/screenshots/demo-output.png)
 
+## 演示视频
+
+我已经把录屏处理成了一个更适合公开展示的短版：
+
+- 时长约 `29 秒`
+- 已裁掉多余区域
+- 已加速处理
+- 静音，适合直接预览流程
+
+[![演示视频封面](assets/demo/product-demo-poster.png)](assets/demo/product-demo-short.mp4)
+
+点击上面的封面图，可以直接打开演示视频。
+
 ## 获取 API Key
 
 如果你还没有豆包语音的 API Key，直接去这里：
