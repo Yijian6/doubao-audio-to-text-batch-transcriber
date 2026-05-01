@@ -263,6 +263,11 @@ def post_json(
         except json.JSONDecodeError:
             parsed = {"raw_body": body}
         return exc.code, headers_dict, parsed
+    except error.URLError as exc:
+        reason = getattr(exc, "reason", exc)
+        return 0, {}, {"network_error": str(reason)}
+    except OSError as exc:
+        return 0, {}, {"network_error": str(exc)}
 
 
 def extract_text(response_json: dict) -> str:
