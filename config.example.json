@@ -1,0 +1,14 @@
+{
+  "api_key": "REPLACE_WITH_YOUR_NEW_API_KEY",
+  "input_dir": "input",
+  "output_dir": "output",
+  "resource_id": "volc.bigasr.auc_turbo",
+  "extensions": [".mp3", ".wav", ".m4a", ".ogg", ".opus", ".mp4", ".flac", ".aac", ".wma"],
+  "recursive": true,
+  "overwrite": false,
+  "retries": 2,
+  "retry_wait": 3,
+  "request_timeout": 600,
+  "language": "",
+  "save_json": false
+}
