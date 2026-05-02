@@ -14,8 +14,10 @@ from doubao_batch_transcribe import (
     DEFAULT_RESOURCE_ID,
     SUPPORTED_EXTENSIONS,
     apply_config,
+    iter_audio_files,
     load_config,
     namespace_to_config,
+    normalized_extensions,
     run_batch_transcription,
     save_config,
 )
@@ -42,6 +44,8 @@ class App:
         self.retries_var = tk.IntVar(value=2)
         self.status_var = tk.StringVar(value="就绪")
         self.summary_var = tk.StringVar(value="成功 0 | 跳过 0 | 失败 0")
+        self.preview_var = tk.StringVar(value="待扫描")
+        self.progress_var = tk.DoubleVar(value=0.0)
 
         self._build_ui()
         self._load_config_into_form()
@@ -188,9 +192,10 @@ class App:
 
         self._build_metric_card(status_row, 0, "状态", self.status_var)
         self._build_metric_card(status_row, 1, "统计", self.summary_var)
+        self._build_metric_card(status_row, 2, "待处理文件", self.preview_var)
 
         action_card = ttk.Frame(status_row, style="Panel.TFrame", padding=12)
-        action_card.grid(row=0, column=2, columnspan=2, sticky="nsew", padx=(12, 0))
+        action_card.grid(row=0, column=3, sticky="nsew", padx=(12, 0))
         action_card.columnconfigure(0, weight=1)
         button_bar = ttk.Frame(action_card, style="Panel.TFrame")
         button_bar.grid(row=0, column=0, sticky="e")
@@ -210,15 +215,34 @@ class App:
             style="Primary.TButton",
         )
         self.start_button.pack(side="left")
+        self.scan_button = ttk.Button(
+            button_bar,
+            text="预扫描",
+            command=self._scan_files,
+            style="Quiet.TButton",
+        )
+        self.scan_button.pack(side="left", padx=(0, 8), before=self.start_button)
 
         controls = ttk.Frame(self.root, padding=(24, 0, 24, 18))
         controls.grid(row=4, column=0, sticky="nsew")
         controls.columnconfigure(0, weight=1)
-        controls.rowconfigure(1, weight=1)
+        controls.rowconfigure(3, weight=1)
 
-        ttk.Label(controls, text="运行日志", style="Subtle.TLabel").grid(row=0, column=0, sticky="w", pady=(0, 8))
+        ttk.Label(controls, text="运行进度", style="Subtle.TLabel").grid(row=0, column=0, sticky="w", pady=(0, 8))
+        progress_frame = ttk.Frame(controls, style="Panel.TFrame", padding=12)
+        progress_frame.grid(row=1, column=0, sticky="ew")
+        progress_frame.columnconfigure(0, weight=1)
+        self.progress_bar = ttk.Progressbar(
+            progress_frame,
+            mode="determinate",
+            variable=self.progress_var,
+            maximum=100,
+        )
+        self.progress_bar.grid(row=0, column=0, sticky="ew")
+
+        ttk.Label(controls, text="运行日志", style="Subtle.TLabel").grid(row=2, column=0, sticky="w", pady=(14, 8))
         log_frame = ttk.Frame(controls, style="Panel.TFrame", padding=8)
-        log_frame.grid(row=1, column=0, sticky="nsew")
+        log_frame.grid(row=3, column=0, sticky="nsew")
         log_frame.columnconfigure(0, weight=1)
         log_frame.rowconfigure(0, weight=1)
 
@@ -313,10 +337,29 @@ class App:
         self.start_button.configure(state=state)
         self.save_button.configure(state=state)
         self.open_button.configure(state=state)
+        self.scan_button.configure(state=state)
 
     def _append_log(self, message: str) -> None:
         self.log_text.insert("end", message + "\n")
         self.log_text.see("end")
+
+    def _scan_files(self) -> None:
+        input_dir = Path(self.input_dir_var.get().strip())
+        if not str(input_dir).strip():
+            messagebox.showerror("缺少输入目录", "请选择输入目录。")
+            return
+        if not input_dir.exists() or not input_dir.is_dir():
+            messagebox.showerror("输入目录无效", "输入目录不存在，或不是有效文件夹。")
+            return
+
+        files = iter_audio_files(
+            input_dir,
+            self.recursive_var.get(),
+            normalized_extensions(sorted(SUPPORTED_EXTENSIONS)),
+        )
+        self.preview_var.set(f"{len(files)} 个文件")
+        self._append_log(f"预扫描完成：找到 {len(files)} 个待处理文件。")
+        self.status_var.set("已完成预扫描")
 
     def _start_transcription(self) -> None:
         if self.worker and self.worker.is_alive():
@@ -337,6 +380,7 @@ class App:
         self.log_text.delete("1.0", "end")
         self.status_var.set("正在运行...")
         self.summary_var.set("成功 0 | 跳过 0 | 失败 0")
+        self.progress_var.set(0)
         self._set_running(True)
 
         def worker() -> None:
@@ -345,7 +389,7 @@ class App:
                     args,
                     log_fn=lambda message: self.queue.put(("log", message)),
                     progress_fn=lambda index, total, path: self.queue.put(
-                        ("status", f"正在处理 {index}/{total}：{path.name}")
+                        ("progress", (index, total, path.name))
                     ),
                 )
                 self.queue.put(("done", result))
@@ -368,6 +412,10 @@ class App:
                     self._append_log(str(payload))
                 elif kind == "status":
                     self.status_var.set(str(payload))
+                elif kind == "progress":
+                    index, total, file_name = payload
+                    self.status_var.set(f"正在处理 {index}/{total}：{file_name}")
+                    self.progress_var.set((index - 1) / total * 100 if total else 0)
                 elif kind == "done":
                     result = payload
                     self.status_var.set("已完成")
@@ -375,6 +423,8 @@ class App:
                         f"成功 {result.success_count} | 跳过 {result.skipped_count} | "
                         f"失败 {result.failed_count}"
                     )
+                    self.preview_var.set(f"{result.total} 个文件")
+                    self.progress_var.set(100 if result.total else 0)
                     self._set_running(False)
                     if result.failed_count:
                         messagebox.showwarning(
