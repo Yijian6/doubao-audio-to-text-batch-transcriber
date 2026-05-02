@@ -34,6 +34,7 @@
 - 支持保存原始 JSON
 - 支持命令行运行
 - 支持 Windows 双击启动
+- 提供桌面 GUI 第一版
 
 ## 快速开始
 
@@ -58,11 +59,18 @@ python --version
 5. 双击 `run_transcribe.bat`，或执行 `python .\doubao_batch_transcribe.py`
 6. 到 `output/` 查看生成的 `.txt`
 
+如果使用桌面界面：
+
+- 双击 `run_gui.bat`
+- 或执行 `python .\gui_app.py`
+
 ### 目录说明
 
 ```text
 .
 |- doubao_batch_transcribe.py
+|- gui_app.py
+|- run_gui.bat
 |- run_transcribe.bat
 |- config.example.json
 |- input/
@@ -193,6 +201,31 @@ python .\doubao_batch_transcribe.py
 ```powershell
 python .\doubao_batch_transcribe.py .\input .\output --api-key "your-api-key" --recursive
 ```
+
+## GUI 用法
+
+Windows：
+
+```powershell
+.\run_gui.bat
+```
+
+或：
+
+```powershell
+python .\gui_app.py
+```
+
+GUI 第一版支持：
+
+- 填写 API Key
+- 选择输入目录
+- 选择输出目录
+- 递归、覆盖、保存 JSON 开关
+- 重试次数设置
+- 日志面板
+- 打开输出目录
+- 中文界面
 
 ## 支持格式
 

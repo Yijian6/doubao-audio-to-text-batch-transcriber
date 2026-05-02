@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+from dataclasses import dataclass
 import json
 import mimetypes
 import sys
@@ -35,6 +36,15 @@ SUPPORTED_EXTENSIONS = {
     ".aac",
     ".wma",
 }
+
+
+@dataclass
+class BatchResult:
+    total: int
+    success_count: int
+    skipped_count: int
+    failed_count: int
+    log_path: Path
 
 
 def parse_args() -> argparse.Namespace:
@@ -345,17 +355,45 @@ def write_text(path: Path, content: str) -> None:
     path.write_text(content, encoding="utf-8")
 
 
-def main() -> int:
-    args = parse_args()
-    config = load_config(args.config.resolve())
-    args = apply_config(args, config)
+def save_config(config_path: Path, config: dict) -> None:
+    config_path.write_text(
+        json.dumps(config, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+
+def namespace_to_config(args: argparse.Namespace) -> dict:
+    return {
+        "api_key": args.api_key,
+        "app_key": args.app_key,
+        "access_key": args.access_key,
+        "input_dir": str(args.input_dir) if args.input_dir else "",
+        "output_dir": str(args.output_dir) if args.output_dir else "",
+        "resource_id": args.resource_id,
+        "extensions": list(args.extensions),
+        "recursive": bool(args.recursive),
+        "overwrite": bool(args.overwrite),
+        "retries": int(args.retries),
+        "retry_wait": float(args.retry_wait),
+        "request_timeout": int(args.request_timeout),
+        "language": args.language,
+        "save_json": bool(args.save_json),
+    }
+
+
+def run_batch_transcription(
+    args: argparse.Namespace,
+    log_fn=None,
+    progress_fn=None,
+) -> BatchResult:
+    def emit(message: str) -> None:
+        if log_fn is None:
+            print(message)
+        else:
+            log_fn(message)
 
     if args.input_dir is None or args.output_dir is None:
-        print(
-            "Missing input/output directory. Provide them in command line or config.json.",
-            file=sys.stderr,
-        )
-        return 2
+        raise ValueError("Missing input/output directory.")
 
     auth_headers = ensure_auth(args)
 
@@ -364,16 +402,21 @@ def main() -> int:
     extensions = normalized_extensions(args.extensions)
 
     if not input_dir.exists() or not input_dir.is_dir():
-        print(f"Input directory does not exist: {input_dir}", file=sys.stderr)
-        return 2
+        raise ValueError(f"Input directory does not exist: {input_dir}")
 
     audio_files = iter_audio_files(input_dir, args.recursive, extensions)
-    if not audio_files:
-        print("No matching audio files found.")
-        return 0
-
     output_dir.mkdir(parents=True, exist_ok=True)
     log_path = output_dir / "transcribe_results.jsonl"
+
+    if not audio_files:
+        emit("No matching audio files found.")
+        return BatchResult(
+            total=0,
+            success_count=0,
+            skipped_count=0,
+            failed_count=0,
+            log_path=log_path,
+        )
 
     total = len(audio_files)
     success_count = 0
@@ -382,15 +425,18 @@ def main() -> int:
 
     with log_path.open("a", encoding="utf-8") as log_handle:
         for index, audio_path in enumerate(audio_files, start=1):
+            if progress_fn is not None:
+                progress_fn(index, total, audio_path)
+
             output_path = make_output_path(audio_path, input_dir, output_dir)
             json_path = output_path.with_suffix(".json")
 
             if output_path.exists() and not args.overwrite:
                 skipped_count += 1
-                print(f"[{index}/{total}] SKIP {audio_path.name} -> existing output")
+                emit(f"[{index}/{total}] SKIP {audio_path.name} -> existing output")
                 continue
 
-            print(f"[{index}/{total}] TRANSCRIBE {audio_path}")
+            emit(f"[{index}/{total}] TRANSCRIBE {audio_path}")
             ok, result, raw_json = transcribe_file(audio_path, args, auth_headers)
 
             log_record = {
@@ -406,20 +452,47 @@ def main() -> int:
                     write_text(json_path, json.dumps(raw_json, ensure_ascii=False, indent=2))
                 success_count += 1
                 log_record["text_length"] = len(result)
-                print(f"[{index}/{total}] DONE {output_path}")
+                emit(f"[{index}/{total}] DONE {output_path}")
             else:
                 failed_count += 1
                 log_record["error"] = result
-                print(f"[{index}/{total}] FAIL {audio_path.name}: {result}", file=sys.stderr)
+                emit(f"[{index}/{total}] FAIL {audio_path.name}: {result}")
 
             log_handle.write(json.dumps(log_record, ensure_ascii=False) + "\n")
             log_handle.flush()
 
-    print(
+    emit(
         f"Finished. success={success_count}, skipped={skipped_count}, failed={failed_count}, "
         f"log={log_path}"
     )
-    return 1 if failed_count else 0
+    return BatchResult(
+        total=total,
+        success_count=success_count,
+        skipped_count=skipped_count,
+        failed_count=failed_count,
+        log_path=log_path,
+    )
+
+
+def main() -> int:
+    args = parse_args()
+    config = load_config(args.config.resolve())
+    args = apply_config(args, config)
+
+    if args.input_dir is None or args.output_dir is None:
+        print(
+            "Missing input/output directory. Provide them in command line or config.json.",
+            file=sys.stderr,
+        )
+        return 2
+
+    try:
+        result = run_batch_transcription(args)
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+
+    return 1 if result.failed_count else 0
 
 
 if __name__ == "__main__":
