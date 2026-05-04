@@ -27,9 +27,9 @@ class App:
     def __init__(self, root: tk.Tk) -> None:
         self.root = root
         self.root.title("豆包音频转文字批量工具")
-        self.root.geometry("1040x780")
-        self.root.minsize(960, 700)
-        self.root.configure(bg="#f7f6f3")
+        self.root.geometry("1040x820")
+        self.root.minsize(960, 720)
+        self.root.configure(bg="#f4f2ee")
 
         self.config_path = Path(DEFAULT_CONFIG_NAME)
         self.queue: queue.Queue[tuple[str, object]] = queue.Queue()
@@ -56,44 +56,51 @@ class App:
         style = ttk.Style()
         style.theme_use("clam")
 
-        bg = "#f7f6f3"
-        panel = "#fbfbf9"
-        border = "#dedbd4"
-        text = "#191816"
-        muted = "#76716a"
-        accent = "#111111"
+        # Gallery palette: warm paper, graphite accents, no decoration.
+        bg = "#f4f2ee"          # warm off-white canvas
+        panel = "#faf9f7"       # lifted surface, barely distinguishable
+        border = "#ddd9d2"      # thin graphite divider
+        text = "#2c2a26"        # soft-black body text
+        muted = "#9b9590"       # gallery-placard secondary text
+        accent = "#2c2a26"      # accent = text, no color pop
+        field_bg = "#ffffff"
         ui_font = "Microsoft YaHei UI"
 
         style.configure(".", background=bg, foreground=text)
         style.configure("TFrame", background=bg)
-        style.configure("Panel.TFrame", background=panel, borderwidth=1, relief="solid")
+        style.configure("Panel.TFrame", background=panel, borderwidth=1, relief="solid", bordercolor=border)
         style.configure("Surface.TFrame", background=panel)
+
+        # Typography hierarchy: generous sizing, light weight where possible.
         style.configure("TLabel", background=bg, foreground=text, font=(ui_font, 10))
-        style.configure("Title.TLabel", background=bg, foreground=text, font=(ui_font, 19, "bold"))
-        style.configure("Subtle.TLabel", background=bg, foreground=muted, font=(ui_font, 10))
-        style.configure("PanelTitle.TLabel", background=panel, foreground=text, font=(ui_font, 11, "bold"))
-        style.configure("PanelBody.TLabel", background=panel, foreground=muted, font=(ui_font, 9))
-        style.configure("Value.TLabel", background=panel, foreground=text, font=(ui_font, 10, "bold"))
+        style.configure("Title.TLabel", background=bg, foreground=text, font=(ui_font, 22))
+        style.configure("Subtitle.TLabel", background=bg, foreground=muted, font=(ui_font, 10))
+        style.configure("Section.TLabel", background=bg, foreground=muted, font=(ui_font, 9))
         style.configure("InlineTitle.TLabel", background=panel, foreground=muted, font=(ui_font, 9))
-        style.configure("InlineValue.TLabel", background=panel, foreground=text, font=(ui_font, 10, "bold"))
-        style.configure("TEntry", fieldbackground="#ffffff", bordercolor=border, lightcolor=border, darkcolor=border)
-        style.configure("TSpinbox", fieldbackground="#ffffff", bordercolor=border, lightcolor=border, darkcolor=border)
+        style.configure("InlineValue.TLabel", background=panel, foreground=text, font=(ui_font, 10))
+
+        style.configure("TEntry", fieldbackground=field_bg, bordercolor=border, lightcolor=border, darkcolor=border, font=(ui_font, 10))
+        style.configure("TSpinbox", fieldbackground=field_bg, bordercolor=border, lightcolor=border, darkcolor=border)
         style.configure("TCheckbutton", background=bg, foreground=text, font=(ui_font, 10))
-        style.configure("TButton", padding=(11, 7), font=(ui_font, 10))
-        style.configure("Primary.TButton", background=accent, foreground="#ffffff", borderwidth=0, padding=(16, 8))
+
+        # Buttons: flat, graphite, no visual noise.
+        style.configure("TButton", padding=(12, 6), font=(ui_font, 10), bordercolor=border, lightcolor=border, darkcolor=border)
+        style.map("TButton", background=[("active", "#eae8e4")])
+        style.configure("Primary.TButton", background=accent, foreground="#ffffff", borderwidth=0, padding=(18, 7), font=(ui_font, 10))
         style.map(
             "Primary.TButton",
-            background=[("active", "#222222"), ("disabled", "#bdb7af")],
-            foreground=[("disabled", "#f1efeb")],
+            background=[("active", "#444240"), ("disabled", "#c8c5c0")],
+            foreground=[("disabled", "#e8e6e2")],
         )
-        style.configure("Quiet.TButton", background=panel, foreground=text, bordercolor=border, lightcolor=border, darkcolor=border)
-        style.map("Quiet.TButton", background=[("active", "#f0efec")])
+        style.configure("Quiet.TButton", background=panel, foreground=text, bordercolor=border, lightcolor=border, darkcolor=border, font=(ui_font, 10))
+        style.map("Quiet.TButton", background=[("active", "#eeecea")])
+
         style.configure("TSeparator", background=border)
         style.configure(
             "Horizontal.TProgressbar",
-            troughcolor="#ebe8e3",
+            troughcolor="#eae8e4",
             background=accent,
-            bordercolor="#ebe8e3",
+            bordercolor="#eae8e4",
             lightcolor=accent,
             darkcolor=accent,
         )
@@ -101,85 +108,83 @@ class App:
     def _build_ui(self) -> None:
         self._configure_style()
         self.root.columnconfigure(0, weight=1)
-        self.root.rowconfigure(4, weight=1)
+        self.root.rowconfigure(6, weight=1)
 
-        header = ttk.Frame(self.root, padding=(28, 22, 28, 8))
+        PAD_X = 44          # generous gallery margins
+        ROW_SPACING = 10    # breathing room between form rows
+
+        # Header
+        header = ttk.Frame(self.root, padding=(PAD_X, 36, PAD_X, 0))
         header.grid(row=0, column=0, sticky="ew")
         header.columnconfigure(0, weight=1)
 
-        ttk.Label(
-            header,
-            text="豆包音频转文字",
-            style="Title.TLabel",
-        ).grid(row=0, column=0, sticky="w")
+        ttk.Label(header, text="豆包音频转文字", style="Title.TLabel").grid(
+            row=0, column=0, sticky="w"
+        )
+        ttk.Label(header, text="批量音频转写工具", style="Subtitle.TLabel").grid(
+            row=1, column=0, sticky="w", pady=(4, 0)
+        )
 
-        form = ttk.Frame(self.root, style="Panel.TFrame", padding=(18, 16))
-        form.grid(row=1, column=0, sticky="ew", padx=28)
+        # thin graphite rule
+        ttk.Separator(self.root, orient="horizontal").grid(
+            row=1, column=0, sticky="ew", padx=PAD_X, pady=(18, 0)
+        )
+
+        # Form
+        form = ttk.Frame(self.root, padding=(PAD_X, 22, PAD_X, 0))
+        form.grid(row=2, column=0, sticky="ew")
         form.columnconfigure(1, weight=1)
 
-        ttk.Label(form, text="配置", style="PanelTitle.TLabel").grid(row=0, column=0, columnspan=3, sticky="w")
-
-        ttk.Label(form, text="API Key").grid(row=1, column=0, sticky="w", pady=(12, 6))
-        ttk.Entry(form, textvariable=self.api_key_var, show="*").grid(
-            row=1,
-            column=1,
-            sticky="ew",
-            pady=(12, 6),
+        ttk.Label(form, text="配置", style="Section.TLabel").grid(
+            row=0, column=0, columnspan=3, sticky="w", pady=(0, 14)
         )
 
-        ttk.Label(form, text="输入目录").grid(row=2, column=0, sticky="w", pady=6)
+        ttk.Label(form, text="API Key").grid(row=1, column=0, sticky="w", pady=(0, ROW_SPACING), padx=(0, 16))
+        ttk.Entry(form, textvariable=self.api_key_var, show="*").grid(
+            row=1, column=1, columnspan=2, sticky="ew", pady=(0, ROW_SPACING)
+        )
+
+        ttk.Label(form, text="输入目录").grid(row=2, column=0, sticky="w", pady=(0, ROW_SPACING), padx=(0, 16))
         ttk.Entry(form, textvariable=self.input_dir_var).grid(
-            row=2,
-            column=1,
-            sticky="ew",
-            pady=6,
+            row=2, column=1, sticky="ew", pady=(0, ROW_SPACING)
         )
         ttk.Button(form, text="选择", command=self._choose_input_dir, style="Quiet.TButton").grid(
-            row=2,
-            column=2,
-            padx=(8, 0),
-            pady=6,
+            row=2, column=2, padx=(10, 0), pady=(0, ROW_SPACING)
         )
 
-        ttk.Label(form, text="输出目录").grid(row=3, column=0, sticky="w", pady=6)
+        ttk.Label(form, text="输出目录").grid(row=3, column=0, sticky="w", pady=(0, ROW_SPACING), padx=(0, 16))
         ttk.Entry(form, textvariable=self.output_dir_var).grid(
-            row=3,
-            column=1,
-            sticky="ew",
-            pady=6,
+            row=3, column=1, sticky="ew", pady=(0, ROW_SPACING)
         )
         ttk.Button(form, text="选择", command=self._choose_output_dir, style="Quiet.TButton").grid(
-            row=3,
-            column=2,
-            padx=(8, 0),
-            pady=6,
+            row=3, column=2, padx=(10, 0), pady=(0, ROW_SPACING)
         )
 
-        options = ttk.Frame(self.root, padding=(28, 12, 28, 10))
-        options.grid(row=2, column=0, sticky="ew")
+        # thin graphite rule
+        ttk.Separator(self.root, orient="horizontal").grid(
+            row=3, column=0, sticky="ew", padx=PAD_X, pady=(6, 0)
+        )
+
+        # Options
+        options = ttk.Frame(self.root, padding=(PAD_X, 14, PAD_X, 0))
+        options.grid(row=4, column=0, sticky="ew")
         options.columnconfigure(0, weight=1)
         options.columnconfigure(1, weight=1)
         options.columnconfigure(2, weight=1)
         options.columnconfigure(3, weight=1)
 
         ttk.Checkbutton(options, text="递归扫描", variable=self.recursive_var).grid(
-            row=0,
-            column=0,
-            sticky="w",
+            row=0, column=0, sticky="w"
         )
         ttk.Checkbutton(options, text="覆盖已有结果", variable=self.overwrite_var).grid(
-            row=0,
-            column=1,
-            sticky="w",
+            row=0, column=1, sticky="w"
         )
         ttk.Checkbutton(options, text="保存 JSON", variable=self.save_json_var).grid(
-            row=0,
-            column=2,
-            sticky="w",
+            row=0, column=2, sticky="w"
         )
         retries_group = ttk.Frame(options)
         retries_group.grid(row=0, column=3, sticky="e")
-        ttk.Label(retries_group, text="重试次数").pack(side="left", padx=(0, 6))
+        ttk.Label(retries_group, text="重试次数").pack(side="left", padx=(0, 8))
         ttk.Spinbox(
             retries_group,
             from_=0,
@@ -188,8 +193,9 @@ class App:
             textvariable=self.retries_var,
         ).pack(side="left")
 
-        status_panel = ttk.Frame(self.root, style="Panel.TFrame", padding=(14, 12))
-        status_panel.grid(row=3, column=0, sticky="ew", padx=28, pady=(0, 12))
+        # Status bar
+        status_panel = ttk.Frame(self.root, style="Panel.TFrame", padding=(18, 11))
+        status_panel.grid(row=5, column=0, sticky="ew", padx=PAD_X, pady=(16, 0))
         status_panel.columnconfigure(0, weight=1)
 
         stats = ttk.Frame(status_panel, style="Surface.TFrame")
@@ -201,39 +207,31 @@ class App:
         button_bar = ttk.Frame(status_panel, style="Surface.TFrame")
         button_bar.grid(row=0, column=1, sticky="e")
         self.save_button = ttk.Button(button_bar, text="保存", command=self._save_config, style="Quiet.TButton")
-        self.save_button.grid(row=0, column=0, sticky="ew", padx=(0, 8))
+        self.save_button.grid(row=0, column=0, padx=(0, 8))
         self.open_button = ttk.Button(
-            button_bar,
-            text="打开输出",
-            command=self._open_output_dir,
-            style="Quiet.TButton",
+            button_bar, text="打开输出", command=self._open_output_dir, style="Quiet.TButton"
         )
-        self.open_button.grid(row=0, column=1, sticky="ew", padx=(0, 8))
+        self.open_button.grid(row=0, column=1, padx=(0, 8))
         self.scan_button = ttk.Button(
-            button_bar,
-            text="预扫描",
-            command=self._scan_files,
-            style="Quiet.TButton",
+            button_bar, text="预扫描", command=self._scan_files, style="Quiet.TButton"
         )
-        self.scan_button.grid(row=0, column=2, sticky="ew", padx=(0, 8))
+        self.scan_button.grid(row=0, column=2, padx=(0, 8))
         self.start_button = ttk.Button(
-            button_bar,
-            text="开始转写",
-            command=self._start_transcription,
-            style="Primary.TButton",
+            button_bar, text="开始转写", command=self._start_transcription, style="Primary.TButton"
         )
-        self.start_button.grid(row=0, column=3, sticky="ew")
+        self.start_button.grid(row=0, column=3)
 
-        controls = ttk.Frame(self.root, padding=(28, 0, 28, 18))
-        controls.grid(row=4, column=0, sticky="nsew")
+        # Bottom area: progress and panels
+        controls = ttk.Frame(self.root, padding=(PAD_X, 18, PAD_X, 28))
+        controls.grid(row=6, column=0, sticky="nsew")
         controls.columnconfigure(0, weight=2)
         controls.columnconfigure(1, weight=3)
         controls.rowconfigure(3, weight=1)
 
-        ttk.Label(controls, text="运行进度", style="Subtle.TLabel").grid(
-            row=0, column=0, columnspan=2, sticky="w", pady=(0, 8)
+        ttk.Label(controls, text="运行进度", style="Section.TLabel").grid(
+            row=0, column=0, columnspan=2, sticky="w", pady=(0, 10)
         )
-        progress_frame = ttk.Frame(controls, style="Panel.TFrame", padding=12)
+        progress_frame = ttk.Frame(controls, style="Panel.TFrame", padding=(12, 10))
         progress_frame.grid(row=1, column=0, columnspan=2, sticky="ew")
         progress_frame.columnconfigure(0, weight=1)
         self.progress_bar = ttk.Progressbar(
@@ -245,9 +243,11 @@ class App:
         )
         self.progress_bar.grid(row=0, column=0, sticky="ew")
 
-        ttk.Label(controls, text="文件预览", style="Subtle.TLabel").grid(row=2, column=0, sticky="w", pady=(14, 8))
-        preview_frame = ttk.Frame(controls, style="Panel.TFrame", padding=8)
-        preview_frame.grid(row=3, column=0, sticky="nsew", padx=(0, 12))
+        ttk.Label(controls, text="文件预览", style="Section.TLabel").grid(
+            row=2, column=0, sticky="w", pady=(16, 8)
+        )
+        preview_frame = ttk.Frame(controls, style="Panel.TFrame", padding=6)
+        preview_frame.grid(row=3, column=0, sticky="nsew", padx=(0, 14))
         preview_frame.columnconfigure(0, weight=1)
         preview_frame.rowconfigure(0, weight=1)
 
@@ -256,10 +256,10 @@ class App:
             activestyle="none",
             bd=0,
             relief="flat",
-            bg="#ffffff",
-            fg="#1d1d1b",
-            selectbackground="#1d1d1b",
-            selectforeground="#ffffff",
+            bg="#fdfcfb",
+            fg="#2c2a26",
+            selectbackground="#2c2a26",
+            selectforeground="#fdfcfb",
             font=("Microsoft YaHei UI", 9),
             highlightthickness=0,
         )
@@ -269,8 +269,10 @@ class App:
         self.preview_list.configure(yscrollcommand=preview_scrollbar.set)
         self.preview_list.insert("end", "点击“预扫描”查看待转写音频")
 
-        ttk.Label(controls, text="运行日志", style="Subtle.TLabel").grid(row=2, column=1, sticky="w", pady=(14, 8))
-        log_frame = ttk.Frame(controls, style="Panel.TFrame", padding=8)
+        ttk.Label(controls, text="运行日志", style="Section.TLabel").grid(
+            row=2, column=1, sticky="w", pady=(16, 8)
+        )
+        log_frame = ttk.Frame(controls, style="Panel.TFrame", padding=6)
         log_frame.grid(row=3, column=1, sticky="nsew")
         log_frame.columnconfigure(0, weight=1)
         log_frame.rowconfigure(0, weight=1)
@@ -282,10 +284,10 @@ class App:
             height=18,
             bd=0,
             relief="flat",
-            bg="#ffffff",
-            fg="#1d1d1b",
-            insertbackground="#1d1d1b",
-            padx=12,
+            bg="#fdfcfb",
+            fg="#2c2a26",
+            insertbackground="#2c2a26",
+            padx=14,
             pady=12,
         )
         self.log_text.grid(row=0, column=0, sticky="nsew")
@@ -295,9 +297,9 @@ class App:
 
     def _build_inline_stat(self, parent: ttk.Frame, column: int, title: str, variable: tk.StringVar) -> None:
         item = ttk.Frame(parent, style="Surface.TFrame")
-        item.grid(row=0, column=column, sticky="w", padx=(0, 28))
+        item.grid(row=0, column=column, sticky="w", padx=(0, 36))
         ttk.Label(item, text=title, style="InlineTitle.TLabel").grid(row=0, column=0, sticky="w")
-        ttk.Label(item, textvariable=variable, style="InlineValue.TLabel").grid(row=1, column=0, sticky="w", pady=(2, 0))
+        ttk.Label(item, textvariable=variable, style="InlineValue.TLabel").grid(row=1, column=0, sticky="w", pady=(3, 0))
 
     def _load_config_into_form(self) -> None:
         defaults = load_config(self.config_path)
