@@ -27,9 +27,9 @@ class App:
     def __init__(self, root: tk.Tk) -> None:
         self.root = root
         self.root.title("豆包音频转文字批量工具")
-        self.root.geometry("1040x820")
-        self.root.minsize(960, 720)
-        self.root.configure(bg="#f5f5f3")
+        self.root.geometry("1040x780")
+        self.root.minsize(960, 700)
+        self.root.configure(bg="#f7f6f3")
 
         self.config_path = Path(DEFAULT_CONFIG_NAME)
         self.queue: queue.Queue[tuple[str, object]] = queue.Queue()
@@ -56,28 +56,31 @@ class App:
         style = ttk.Style()
         style.theme_use("clam")
 
-        bg = "#f5f5f3"
-        panel = "#fbfbfa"
-        border = "#dad7d2"
-        text = "#1d1d1b"
-        muted = "#6f6a63"
+        bg = "#f7f6f3"
+        panel = "#fbfbf9"
+        border = "#dedbd4"
+        text = "#191816"
+        muted = "#76716a"
         accent = "#111111"
+        ui_font = "Microsoft YaHei UI"
 
         style.configure(".", background=bg, foreground=text)
         style.configure("TFrame", background=bg)
         style.configure("Panel.TFrame", background=panel, borderwidth=1, relief="solid")
         style.configure("Surface.TFrame", background=panel)
-        style.configure("TLabel", background=bg, foreground=text, font=("Segoe UI", 10))
-        style.configure("Title.TLabel", background=bg, foreground=text, font=("Segoe UI", 20, "bold"))
-        style.configure("Subtle.TLabel", background=bg, foreground=muted, font=("Segoe UI", 10))
-        style.configure("PanelTitle.TLabel", background=panel, foreground=text, font=("Segoe UI", 11, "bold"))
-        style.configure("PanelBody.TLabel", background=panel, foreground=muted, font=("Segoe UI", 9))
-        style.configure("Value.TLabel", background=panel, foreground=text, font=("Segoe UI", 10, "bold"))
+        style.configure("TLabel", background=bg, foreground=text, font=(ui_font, 10))
+        style.configure("Title.TLabel", background=bg, foreground=text, font=(ui_font, 19, "bold"))
+        style.configure("Subtle.TLabel", background=bg, foreground=muted, font=(ui_font, 10))
+        style.configure("PanelTitle.TLabel", background=panel, foreground=text, font=(ui_font, 11, "bold"))
+        style.configure("PanelBody.TLabel", background=panel, foreground=muted, font=(ui_font, 9))
+        style.configure("Value.TLabel", background=panel, foreground=text, font=(ui_font, 10, "bold"))
+        style.configure("InlineTitle.TLabel", background=panel, foreground=muted, font=(ui_font, 9))
+        style.configure("InlineValue.TLabel", background=panel, foreground=text, font=(ui_font, 10, "bold"))
         style.configure("TEntry", fieldbackground="#ffffff", bordercolor=border, lightcolor=border, darkcolor=border)
         style.configure("TSpinbox", fieldbackground="#ffffff", bordercolor=border, lightcolor=border, darkcolor=border)
-        style.configure("TCheckbutton", background=bg, foreground=text, font=("Segoe UI", 10))
-        style.configure("TButton", padding=(12, 8), font=("Segoe UI", 10))
-        style.configure("Primary.TButton", background=accent, foreground="#ffffff", borderwidth=0, padding=(14, 9))
+        style.configure("TCheckbutton", background=bg, foreground=text, font=(ui_font, 10))
+        style.configure("TButton", padding=(11, 7), font=(ui_font, 10))
+        style.configure("Primary.TButton", background=accent, foreground="#ffffff", borderwidth=0, padding=(16, 8))
         style.map(
             "Primary.TButton",
             background=[("active", "#222222"), ("disabled", "#bdb7af")],
@@ -100,67 +103,59 @@ class App:
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(4, weight=1)
 
-        header = ttk.Frame(self.root, padding=(24, 24, 24, 10))
+        header = ttk.Frame(self.root, padding=(28, 22, 28, 8))
         header.grid(row=0, column=0, sticky="ew")
         header.columnconfigure(0, weight=1)
 
         ttk.Label(
             header,
-            text="豆包音频转文字批量工具",
+            text="豆包音频转文字",
             style="Title.TLabel",
         ).grid(row=0, column=0, sticky="w")
-        ttk.Label(
-            header,
-            text="填写 Key，选择目录，然后开始批量转写。",
-            style="Subtle.TLabel",
-        ).grid(row=1, column=0, sticky="w", pady=(6, 0))
 
-        form = ttk.Frame(self.root, style="Panel.TFrame", padding=18)
-        form.grid(row=1, column=0, sticky="ew", padx=24)
+        form = ttk.Frame(self.root, style="Panel.TFrame", padding=(18, 16))
+        form.grid(row=1, column=0, sticky="ew", padx=28)
         form.columnconfigure(1, weight=1)
 
-        ttk.Label(form, text="基础配置", style="PanelTitle.TLabel").grid(row=0, column=0, columnspan=3, sticky="w")
-        ttk.Label(form, text="本地目录和 API Key 会保存到 config.json。", style="PanelBody.TLabel").grid(
-            row=1, column=0, columnspan=3, sticky="w", pady=(2, 12)
+        ttk.Label(form, text="配置", style="PanelTitle.TLabel").grid(row=0, column=0, columnspan=3, sticky="w")
+
+        ttk.Label(form, text="API Key").grid(row=1, column=0, sticky="w", pady=(12, 6))
+        ttk.Entry(form, textvariable=self.api_key_var, show="*").grid(
+            row=1,
+            column=1,
+            sticky="ew",
+            pady=(12, 6),
         )
 
-        ttk.Label(form, text="API Key").grid(row=2, column=0, sticky="w", pady=6)
-        ttk.Entry(form, textvariable=self.api_key_var, show="*").grid(
+        ttk.Label(form, text="输入目录").grid(row=2, column=0, sticky="w", pady=6)
+        ttk.Entry(form, textvariable=self.input_dir_var).grid(
             row=2,
             column=1,
             sticky="ew",
             pady=6,
         )
-
-        ttk.Label(form, text="输入目录").grid(row=3, column=0, sticky="w", pady=6)
-        ttk.Entry(form, textvariable=self.input_dir_var).grid(
-            row=3,
-            column=1,
-            sticky="ew",
-            pady=6,
-        )
         ttk.Button(form, text="选择", command=self._choose_input_dir, style="Quiet.TButton").grid(
-            row=3,
+            row=2,
             column=2,
             padx=(8, 0),
             pady=6,
         )
 
-        ttk.Label(form, text="输出目录").grid(row=4, column=0, sticky="w", pady=6)
+        ttk.Label(form, text="输出目录").grid(row=3, column=0, sticky="w", pady=6)
         ttk.Entry(form, textvariable=self.output_dir_var).grid(
-            row=4,
+            row=3,
             column=1,
             sticky="ew",
             pady=6,
         )
         ttk.Button(form, text="选择", command=self._choose_output_dir, style="Quiet.TButton").grid(
-            row=4,
+            row=3,
             column=2,
             padx=(8, 0),
             pady=6,
         )
 
-        options = ttk.Frame(self.root, padding=(24, 14, 24, 10))
+        options = ttk.Frame(self.root, padding=(28, 12, 28, 10))
         options.grid(row=2, column=0, sticky="ew")
         options.columnconfigure(0, weight=1)
         options.columnconfigure(1, weight=1)
@@ -193,50 +188,43 @@ class App:
             textvariable=self.retries_var,
         ).pack(side="left")
 
-        status_row = ttk.Frame(self.root, padding=(24, 0, 24, 12))
-        status_row.grid(row=3, column=0, sticky="ew")
-        status_row.columnconfigure(0, weight=1)
-        status_row.columnconfigure(1, weight=1)
-        status_row.columnconfigure(2, weight=1)
-        status_row.columnconfigure(3, weight=1)
+        status_panel = ttk.Frame(self.root, style="Panel.TFrame", padding=(14, 12))
+        status_panel.grid(row=3, column=0, sticky="ew", padx=28, pady=(0, 12))
+        status_panel.columnconfigure(0, weight=1)
 
-        self._build_metric_card(status_row, 0, "状态", self.status_var)
-        self._build_metric_card(status_row, 1, "统计", self.summary_var)
-        self._build_metric_card(status_row, 2, "待处理文件", self.preview_var)
+        stats = ttk.Frame(status_panel, style="Surface.TFrame")
+        stats.grid(row=0, column=0, sticky="w")
+        self._build_inline_stat(stats, 0, "状态", self.status_var)
+        self._build_inline_stat(stats, 1, "统计", self.summary_var)
+        self._build_inline_stat(stats, 2, "待处理", self.preview_var)
 
-        action_card = ttk.Frame(status_row, style="Panel.TFrame", padding=12)
-        action_card.grid(row=0, column=3, sticky="nsew")
-        action_card.columnconfigure(0, weight=1)
-        action_card.rowconfigure(0, weight=1)
-        button_bar = ttk.Frame(action_card, style="Surface.TFrame")
-        button_bar.grid(row=0, column=0, sticky="nsew")
-        button_bar.columnconfigure(0, weight=1)
-        button_bar.columnconfigure(1, weight=1)
-        self.save_button = ttk.Button(button_bar, text="保存配置", command=self._save_config, style="Quiet.TButton")
-        self.save_button.grid(row=0, column=0, sticky="ew", padx=(0, 6), pady=(0, 6))
+        button_bar = ttk.Frame(status_panel, style="Surface.TFrame")
+        button_bar.grid(row=0, column=1, sticky="e")
+        self.save_button = ttk.Button(button_bar, text="保存", command=self._save_config, style="Quiet.TButton")
+        self.save_button.grid(row=0, column=0, sticky="ew", padx=(0, 8))
         self.open_button = ttk.Button(
             button_bar,
             text="打开输出",
             command=self._open_output_dir,
             style="Quiet.TButton",
         )
-        self.open_button.grid(row=0, column=1, sticky="ew", padx=(6, 0), pady=(0, 6))
+        self.open_button.grid(row=0, column=1, sticky="ew", padx=(0, 8))
         self.scan_button = ttk.Button(
             button_bar,
             text="预扫描",
             command=self._scan_files,
             style="Quiet.TButton",
         )
-        self.scan_button.grid(row=1, column=0, sticky="ew", padx=(0, 6))
+        self.scan_button.grid(row=0, column=2, sticky="ew", padx=(0, 8))
         self.start_button = ttk.Button(
             button_bar,
             text="开始转写",
             command=self._start_transcription,
             style="Primary.TButton",
         )
-        self.start_button.grid(row=1, column=1, sticky="ew", padx=(6, 0))
+        self.start_button.grid(row=0, column=3, sticky="ew")
 
-        controls = ttk.Frame(self.root, padding=(24, 0, 24, 18))
+        controls = ttk.Frame(self.root, padding=(28, 0, 28, 18))
         controls.grid(row=4, column=0, sticky="nsew")
         controls.columnconfigure(0, weight=2)
         controls.columnconfigure(1, weight=3)
@@ -272,7 +260,7 @@ class App:
             fg="#1d1d1b",
             selectbackground="#1d1d1b",
             selectforeground="#ffffff",
-            font=("Segoe UI", 9),
+            font=("Microsoft YaHei UI", 9),
             highlightthickness=0,
         )
         self.preview_list.grid(row=0, column=0, sticky="nsew")
@@ -305,11 +293,11 @@ class App:
         scrollbar.grid(row=0, column=1, sticky="ns")
         self.log_text.configure(yscrollcommand=scrollbar.set)
 
-    def _build_metric_card(self, parent: ttk.Frame, column: int, title: str, variable: tk.StringVar) -> None:
-        card = ttk.Frame(parent, style="Panel.TFrame", padding=12)
-        card.grid(row=0, column=column, sticky="nsew", padx=(0, 12))
-        ttk.Label(card, text=title, style="PanelBody.TLabel").grid(row=0, column=0, sticky="w")
-        ttk.Label(card, textvariable=variable, style="Value.TLabel").grid(row=1, column=0, sticky="w", pady=(6, 0))
+    def _build_inline_stat(self, parent: ttk.Frame, column: int, title: str, variable: tk.StringVar) -> None:
+        item = ttk.Frame(parent, style="Surface.TFrame")
+        item.grid(row=0, column=column, sticky="w", padx=(0, 28))
+        ttk.Label(item, text=title, style="InlineTitle.TLabel").grid(row=0, column=0, sticky="w")
+        ttk.Label(item, textvariable=variable, style="InlineValue.TLabel").grid(row=1, column=0, sticky="w", pady=(2, 0))
 
     def _load_config_into_form(self) -> None:
         defaults = load_config(self.config_path)
@@ -493,7 +481,7 @@ class App:
                     self.status_var.set(str(payload))
                 elif kind == "progress":
                     index, total, file_name = payload
-                    self.status_var.set(f"正在处理 {index}/{total}：{file_name}")
+                    self.status_var.set(f"处理中 {index}/{total}")
                     self.progress_var.set((index - 1) / total * 100 if total else 0)
                 elif kind == "done":
                     result = payload
