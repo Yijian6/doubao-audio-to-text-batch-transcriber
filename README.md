@@ -53,16 +53,22 @@ python --version
 ### 使用步骤
 
 1. 下载或克隆本仓库
-2. 把 `config.example.json` 复制为 `config.json`
-3. 在 `config.json` 中填写 API Key
-4. 把音频文件复制到 `input/`
-5. 双击 `run_transcribe.bat`，或执行 `python .\doubao_batch_transcribe.py`
-6. 到 `output/` 查看生成的 `.txt`
+2. 双击 `run_gui.bat`
+3. 在界面里填写 API Key
+4. 把音频文件复制到 `input/`，或在界面里选择自己的输入目录
+5. 按 `扫描 -> 开始 -> 打开输出`
 
-如果使用桌面界面：
+第一次运行 `run_gui.bat` 时，程序会自动创建：
 
-- 双击 `run_gui.bat`
-- 或执行 `python .\gui_app.py`
+- `config.json`
+- `input/`
+- `output/`
+
+如果你更喜欢命令行，也可以先在 `config.json` 填好 API Key，再运行：
+
+```powershell
+python .\doubao_batch_transcribe.py
+```
 
 ### 目录说明
 
@@ -214,11 +220,13 @@ Windows：
 .\run_gui.bat
 ```
 
-或：
+`run_gui.bat` 会自动检查 Python、创建默认配置和输入输出文件夹。打开后按这个顺序使用：
 
-```powershell
-python .\gui_app.py
-```
+1. 填写 API Key
+2. 把音频放进 `input/`，或选择输入目录
+3. 点击 `扫描`
+4. 点击 `开始`
+5. 点击 `打开输出`
 
 GUI 支持：
 

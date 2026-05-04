@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import os
 import queue
+import shutil
 import threading
 import tkinter as tk
 from pathlib import Path
@@ -34,6 +35,7 @@ class App:
         self.config_path = Path(DEFAULT_CONFIG_NAME)
         self.queue: queue.Queue[tuple[str, object]] = queue.Queue()
         self.worker: threading.Thread | None = None
+        self.config_was_created = False
 
         self.api_key_var = tk.StringVar()
         self.input_dir_var = tk.StringVar()
@@ -44,7 +46,9 @@ class App:
         self.preview_limit = 200
 
         self._build_ui()
+        self._ensure_first_run_files()
         self._load_config_into_form()
+        self._show_initial_guidance()
         self.root.after(120, self._poll_queue)
 
     def _configure_style(self) -> None:
@@ -258,6 +262,17 @@ class App:
         ttk.Label(item, text=title, style="InlineTitle.TLabel").grid(row=0, column=0, sticky="w")
         ttk.Label(item, textvariable=variable, style="InlineValue.TLabel").grid(row=1, column=0, sticky="w", pady=(3, 0))
 
+    def _ensure_first_run_files(self) -> None:
+        Path("input").mkdir(exist_ok=True)
+        Path("output").mkdir(exist_ok=True)
+        if self.config_path.exists():
+            return
+
+        example_config = Path("config.example.json")
+        if example_config.exists():
+            shutil.copyfile(example_config, self.config_path)
+            self.config_was_created = True
+
     def _load_config_into_form(self) -> None:
         defaults = load_config(self.config_path)
         args = argparse.Namespace(
@@ -277,9 +292,40 @@ class App:
             save_json=None,
         )
         args = apply_config(args, defaults)
-        self.api_key_var.set(args.api_key or "")
+        api_key = args.api_key or ""
+        if api_key == "REPLACE_WITH_YOUR_NEW_API_KEY":
+            api_key = ""
+        self.api_key_var.set(api_key)
         self.input_dir_var.set(str(args.input_dir) if args.input_dir else "input")
         self.output_dir_var.set(str(args.output_dir) if args.output_dir else "output")
+
+    def _show_initial_guidance(self) -> None:
+        self.log_text.delete("1.0", "end")
+        if self.config_was_created:
+            self._append_log("已自动创建 config.json、input 和 output。")
+
+        input_dir = Path(self.input_dir_var.get().strip() or "input")
+        files = []
+        if input_dir.exists() and input_dir.is_dir():
+            files = iter_audio_files(input_dir, True, normalized_extensions(sorted(SUPPORTED_EXTENSIONS)))
+
+        if files:
+            self._refresh_preview_list(input_dir, files)
+            self._append_log(f"已发现 {len(files)} 个音频文件。")
+            self._append_log("确认无误后，点击“开始”。")
+        else:
+            self.preview_list.delete(0, "end")
+            self.preview_list.insert("end", "把音频文件放进 input 文件夹")
+            self.preview_list.insert("end", "然后点击“扫描”")
+            self.preview_var.set("待扫描")
+            self._append_log("1. 填写 API Key")
+            self._append_log("2. 把音频放进 input 文件夹，或选择自己的输入目录")
+            self._append_log("3. 点击“扫描”确认文件，再点击“开始”")
+
+        if not self.api_key_var.get().strip():
+            self.status_var.set("请填写 API Key")
+        elif files:
+            self.status_var.set("已发现音频")
 
     def _choose_input_dir(self) -> None:
         selected = filedialog.askdirectory(initialdir=self.input_dir_var.get() or ".")
@@ -371,7 +417,10 @@ class App:
 
         args = self._build_args()
         if not args.api_key:
-            messagebox.showerror("缺少 API Key", "请先填写 API Key。")
+            messagebox.showerror(
+                "缺少 API Key",
+                "请先填写豆包语音 API Key。README 的“获取 API Key”章节里有官方入口。",
+            )
             return
         if not str(args.input_dir).strip():
             messagebox.showerror("缺少输入目录", "请选择输入目录。")
@@ -387,7 +436,10 @@ class App:
             return
         self._refresh_preview_list(input_dir, files)
         if not files:
-            messagebox.showwarning("没有可处理文件", "输入目录中没有找到支持的音频文件。")
+            messagebox.showwarning(
+                "没有可处理文件",
+                "没有找到音频文件。请把 mp3、wav、m4a 等音频放进 input 文件夹，或重新选择输入目录。",
+            )
             return
 
         save_config(self.config_path, namespace_to_config(args))
