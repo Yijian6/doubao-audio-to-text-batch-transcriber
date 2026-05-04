@@ -27,8 +27,8 @@ class App:
     def __init__(self, root: tk.Tk) -> None:
         self.root = root
         self.root.title("豆包音频转文字批量工具")
-        self.root.geometry("1040x820")
-        self.root.minsize(960, 720)
+        self.root.geometry("1040x760")
+        self.root.minsize(920, 660)
         self.root.configure(bg="#f4f2ee")
 
         self.config_path = Path(DEFAULT_CONFIG_NAME)
@@ -38,12 +38,7 @@ class App:
         self.api_key_var = tk.StringVar()
         self.input_dir_var = tk.StringVar()
         self.output_dir_var = tk.StringVar()
-        self.recursive_var = tk.BooleanVar(value=True)
-        self.overwrite_var = tk.BooleanVar(value=False)
-        self.save_json_var = tk.BooleanVar(value=False)
-        self.retries_var = tk.IntVar(value=2)
         self.status_var = tk.StringVar(value="就绪")
-        self.summary_var = tk.StringVar(value="成功 0 | 跳过 0 | 失败 0")
         self.preview_var = tk.StringVar(value="待扫描")
         self.progress_var = tk.DoubleVar(value=0.0)
         self.preview_limit = 200
@@ -80,9 +75,6 @@ class App:
         style.configure("InlineValue.TLabel", background=panel, foreground=text, font=(ui_font, 10))
 
         style.configure("TEntry", fieldbackground=field_bg, bordercolor=border, lightcolor=border, darkcolor=border, font=(ui_font, 10))
-        style.configure("TSpinbox", fieldbackground=field_bg, bordercolor=border, lightcolor=border, darkcolor=border)
-        style.configure("TCheckbutton", background=bg, foreground=text, font=(ui_font, 10))
-
         # Buttons: flat, graphite, no visual noise.
         style.configure("TButton", padding=(12, 6), font=(ui_font, 10), bordercolor=border, lightcolor=border, darkcolor=border)
         style.map("TButton", background=[("active", "#eae8e4")])
@@ -108,7 +100,7 @@ class App:
     def _build_ui(self) -> None:
         self._configure_style()
         self.root.columnconfigure(0, weight=1)
-        self.root.rowconfigure(6, weight=1)
+        self.root.rowconfigure(5, weight=1)
 
         PAD_X = 44          # generous gallery margins
         ROW_SPACING = 10    # breathing room between form rows
@@ -135,29 +127,25 @@ class App:
         form.grid(row=2, column=0, sticky="ew")
         form.columnconfigure(1, weight=1)
 
-        ttk.Label(form, text="配置", style="Section.TLabel").grid(
-            row=0, column=0, columnspan=3, sticky="w", pady=(0, 14)
-        )
-
-        ttk.Label(form, text="API Key").grid(row=1, column=0, sticky="w", pady=(0, ROW_SPACING), padx=(0, 16))
+        ttk.Label(form, text="API Key").grid(row=0, column=0, sticky="w", pady=(0, ROW_SPACING), padx=(0, 16))
         ttk.Entry(form, textvariable=self.api_key_var, show="*").grid(
-            row=1, column=1, columnspan=2, sticky="ew", pady=(0, ROW_SPACING)
+            row=0, column=1, columnspan=2, sticky="ew", pady=(0, ROW_SPACING)
         )
 
-        ttk.Label(form, text="输入目录").grid(row=2, column=0, sticky="w", pady=(0, ROW_SPACING), padx=(0, 16))
+        ttk.Label(form, text="输入目录").grid(row=1, column=0, sticky="w", pady=(0, ROW_SPACING), padx=(0, 16))
         ttk.Entry(form, textvariable=self.input_dir_var).grid(
-            row=2, column=1, sticky="ew", pady=(0, ROW_SPACING)
+            row=1, column=1, sticky="ew", pady=(0, ROW_SPACING)
         )
         ttk.Button(form, text="选择", command=self._choose_input_dir, style="Quiet.TButton").grid(
-            row=2, column=2, padx=(10, 0), pady=(0, ROW_SPACING)
+            row=1, column=2, padx=(10, 0), pady=(0, ROW_SPACING)
         )
 
-        ttk.Label(form, text="输出目录").grid(row=3, column=0, sticky="w", pady=(0, ROW_SPACING), padx=(0, 16))
+        ttk.Label(form, text="输出目录").grid(row=2, column=0, sticky="w", pady=(0, ROW_SPACING), padx=(0, 16))
         ttk.Entry(form, textvariable=self.output_dir_var).grid(
-            row=3, column=1, sticky="ew", pady=(0, ROW_SPACING)
+            row=2, column=1, sticky="ew", pady=(0, ROW_SPACING)
         )
         ttk.Button(form, text="选择", command=self._choose_output_dir, style="Quiet.TButton").grid(
-            row=3, column=2, padx=(10, 0), pady=(0, ROW_SPACING)
+            row=2, column=2, padx=(10, 0), pady=(0, ROW_SPACING)
         )
 
         # thin graphite rule
@@ -165,70 +153,39 @@ class App:
             row=3, column=0, sticky="ew", padx=PAD_X, pady=(6, 0)
         )
 
-        # Options
-        options = ttk.Frame(self.root, padding=(PAD_X, 14, PAD_X, 0))
-        options.grid(row=4, column=0, sticky="ew")
-        options.columnconfigure(0, weight=1)
-        options.columnconfigure(1, weight=1)
-        options.columnconfigure(2, weight=1)
-        options.columnconfigure(3, weight=1)
-
-        ttk.Checkbutton(options, text="递归扫描", variable=self.recursive_var).grid(
-            row=0, column=0, sticky="w"
-        )
-        ttk.Checkbutton(options, text="覆盖已有结果", variable=self.overwrite_var).grid(
-            row=0, column=1, sticky="w"
-        )
-        ttk.Checkbutton(options, text="保存 JSON", variable=self.save_json_var).grid(
-            row=0, column=2, sticky="w"
-        )
-        retries_group = ttk.Frame(options)
-        retries_group.grid(row=0, column=3, sticky="e")
-        ttk.Label(retries_group, text="重试次数").pack(side="left", padx=(0, 8))
-        ttk.Spinbox(
-            retries_group,
-            from_=0,
-            to=10,
-            width=5,
-            textvariable=self.retries_var,
-        ).pack(side="left")
-
         # Status bar
         status_panel = ttk.Frame(self.root, style="Panel.TFrame", padding=(18, 11))
-        status_panel.grid(row=5, column=0, sticky="ew", padx=PAD_X, pady=(16, 0))
+        status_panel.grid(row=4, column=0, sticky="ew", padx=PAD_X, pady=(18, 0))
         status_panel.columnconfigure(0, weight=1)
 
         stats = ttk.Frame(status_panel, style="Surface.TFrame")
         stats.grid(row=0, column=0, sticky="w")
         self._build_inline_stat(stats, 0, "状态", self.status_var)
-        self._build_inline_stat(stats, 1, "统计", self.summary_var)
-        self._build_inline_stat(stats, 2, "待处理", self.preview_var)
+        self._build_inline_stat(stats, 1, "文件", self.preview_var)
 
         button_bar = ttk.Frame(status_panel, style="Surface.TFrame")
         button_bar.grid(row=0, column=1, sticky="e")
-        self.save_button = ttk.Button(button_bar, text="保存", command=self._save_config, style="Quiet.TButton")
-        self.save_button.grid(row=0, column=0, padx=(0, 8))
         self.open_button = ttk.Button(
             button_bar, text="打开输出", command=self._open_output_dir, style="Quiet.TButton"
         )
-        self.open_button.grid(row=0, column=1, padx=(0, 8))
+        self.open_button.grid(row=0, column=0, padx=(0, 8))
         self.scan_button = ttk.Button(
-            button_bar, text="预扫描", command=self._scan_files, style="Quiet.TButton"
+            button_bar, text="扫描", command=self._scan_files, style="Quiet.TButton"
         )
-        self.scan_button.grid(row=0, column=2, padx=(0, 8))
+        self.scan_button.grid(row=0, column=1, padx=(0, 8))
         self.start_button = ttk.Button(
-            button_bar, text="开始转写", command=self._start_transcription, style="Primary.TButton"
+            button_bar, text="开始", command=self._start_transcription, style="Primary.TButton"
         )
-        self.start_button.grid(row=0, column=3)
+        self.start_button.grid(row=0, column=2)
 
         # Bottom area: progress and panels
         controls = ttk.Frame(self.root, padding=(PAD_X, 18, PAD_X, 28))
-        controls.grid(row=6, column=0, sticky="nsew")
+        controls.grid(row=5, column=0, sticky="nsew")
         controls.columnconfigure(0, weight=2)
         controls.columnconfigure(1, weight=3)
         controls.rowconfigure(3, weight=1)
 
-        ttk.Label(controls, text="运行进度", style="Section.TLabel").grid(
+        ttk.Label(controls, text="进度", style="Section.TLabel").grid(
             row=0, column=0, columnspan=2, sticky="w", pady=(0, 10)
         )
         progress_frame = ttk.Frame(controls, style="Panel.TFrame", padding=(12, 10))
@@ -243,7 +200,7 @@ class App:
         )
         self.progress_bar.grid(row=0, column=0, sticky="ew")
 
-        ttk.Label(controls, text="文件预览", style="Section.TLabel").grid(
+        ttk.Label(controls, text="文件", style="Section.TLabel").grid(
             row=2, column=0, sticky="w", pady=(16, 8)
         )
         preview_frame = ttk.Frame(controls, style="Panel.TFrame", padding=6)
@@ -267,9 +224,9 @@ class App:
         preview_scrollbar = ttk.Scrollbar(preview_frame, orient="vertical", command=self.preview_list.yview)
         preview_scrollbar.grid(row=0, column=1, sticky="ns")
         self.preview_list.configure(yscrollcommand=preview_scrollbar.set)
-        self.preview_list.insert("end", "点击“预扫描”查看待转写音频")
+        self.preview_list.insert("end", "点击“扫描”查看待转写音频")
 
-        ttk.Label(controls, text="运行日志", style="Section.TLabel").grid(
+        ttk.Label(controls, text="日志", style="Section.TLabel").grid(
             row=2, column=1, sticky="w", pady=(16, 8)
         )
         log_frame = ttk.Frame(controls, style="Panel.TFrame", padding=6)
@@ -323,10 +280,6 @@ class App:
         self.api_key_var.set(args.api_key or "")
         self.input_dir_var.set(str(args.input_dir) if args.input_dir else "input")
         self.output_dir_var.set(str(args.output_dir) if args.output_dir else "output")
-        self.recursive_var.set(bool(args.recursive))
-        self.overwrite_var.set(bool(args.overwrite))
-        self.save_json_var.set(bool(args.save_json))
-        self.retries_var.set(int(args.retries))
 
     def _choose_input_dir(self) -> None:
         selected = filedialog.askdirectory(initialdir=self.input_dir_var.get() or ".")
@@ -348,25 +301,18 @@ class App:
             access_key=None,
             resource_id=DEFAULT_RESOURCE_ID,
             extensions=sorted(SUPPORTED_EXTENSIONS),
-            recursive=self.recursive_var.get(),
-            overwrite=self.overwrite_var.get(),
-            retries=self.retries_var.get(),
+            recursive=True,
+            overwrite=False,
+            retries=2,
             retry_wait=3.0,
             request_timeout=600,
             language="",
-            save_json=self.save_json_var.get(),
+            save_json=False,
         )
-
-    def _save_config(self) -> None:
-        args = self._build_args()
-        save_config(self.config_path, namespace_to_config(args))
-        self._append_log(f"已保存配置到 {self.config_path.resolve()}")
-        self.status_var.set("配置已保存")
 
     def _set_running(self, running: bool) -> None:
         state = "disabled" if running else "normal"
         self.start_button.configure(state=state)
-        self.save_button.configure(state=state)
         self.open_button.configure(state=state)
         self.scan_button.configure(state=state)
 
@@ -383,7 +329,7 @@ class App:
 
         files = iter_audio_files(
             input_dir,
-            self.recursive_var.get(),
+            True,
             normalized_extensions(sorted(SUPPORTED_EXTENSIONS)),
         )
         return input_dir, files
@@ -412,12 +358,12 @@ class App:
         try:
             input_dir, files = self._collect_audio_files()
         except ValueError as exc:
-            messagebox.showerror("无法预扫描", str(exc))
+            messagebox.showerror("无法扫描", str(exc))
             return
 
         self._refresh_preview_list(input_dir, files)
-        self._append_log(f"预扫描完成：找到 {len(files)} 个待处理文件。")
-        self.status_var.set("已完成预扫描")
+        self._append_log(f"扫描完成：找到 {len(files)} 个待处理文件。")
+        self.status_var.set("已完成扫描")
 
     def _start_transcription(self) -> None:
         if self.worker and self.worker.is_alive():
@@ -448,7 +394,6 @@ class App:
         self.log_text.delete("1.0", "end")
         self._append_log(f"准备转写：共 {len(files)} 个音频文件。")
         self.status_var.set("正在运行...")
-        self.summary_var.set("成功 0 | 跳过 0 | 失败 0")
         self.progress_var.set(0)
         self._set_running(True)
 
@@ -487,9 +432,8 @@ class App:
                     self.progress_var.set((index - 1) / total * 100 if total else 0)
                 elif kind == "done":
                     result = payload
-                    self.status_var.set("已完成")
-                    self.summary_var.set(
-                        f"成功 {result.success_count} | 跳过 {result.skipped_count} | "
+                    self.status_var.set(
+                        f"完成：成功 {result.success_count} / 跳过 {result.skipped_count} / "
                         f"失败 {result.failed_count}"
                     )
                     self.preview_var.set(f"{result.total} 个文件")
