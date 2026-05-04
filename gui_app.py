@@ -165,18 +165,18 @@ class App:
 
         button_bar = ttk.Frame(status_panel, style="Surface.TFrame")
         button_bar.grid(row=0, column=1, sticky="e")
-        self.open_button = ttk.Button(
-            button_bar, text="打开输出", command=self._open_output_dir, style="Quiet.TButton"
-        )
-        self.open_button.grid(row=0, column=0, padx=(0, 8))
         self.scan_button = ttk.Button(
             button_bar, text="扫描", command=self._scan_files, style="Quiet.TButton"
         )
-        self.scan_button.grid(row=0, column=1, padx=(0, 8))
+        self.scan_button.grid(row=0, column=0, padx=(0, 8))
         self.start_button = ttk.Button(
             button_bar, text="开始", command=self._start_transcription, style="Primary.TButton"
         )
-        self.start_button.grid(row=0, column=2)
+        self.start_button.grid(row=0, column=1, padx=(0, 8))
+        self.open_button = ttk.Button(
+            button_bar, text="打开输出", command=self._open_output_dir, style="Quiet.TButton"
+        )
+        self.open_button.grid(row=0, column=2)
 
         # Bottom area: progress and panels
         controls = ttk.Frame(self.root, padding=(PAD_X, 18, PAD_X, 28))
