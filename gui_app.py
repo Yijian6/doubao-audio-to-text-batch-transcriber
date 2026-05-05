@@ -36,6 +36,8 @@ class App:
         self.queue: queue.Queue[tuple[str, object]] = queue.Queue()
         self.worker: threading.Thread | None = None
         self.config_was_created = False
+        self.config_save_after_id: str | None = None
+        self.is_loading_form = True
 
         self.api_key_var = tk.StringVar()
         self.input_dir_var = tk.StringVar()
@@ -48,7 +50,9 @@ class App:
         self._build_ui()
         self._ensure_first_run_files()
         self._load_config_into_form()
+        self._bind_auto_save()
         self._show_initial_guidance()
+        self.root.protocol("WM_DELETE_WINDOW", self._on_close)
         self.root.after(120, self._poll_queue)
 
     def _configure_style(self) -> None:
@@ -298,6 +302,29 @@ class App:
         self.api_key_var.set(api_key)
         self.input_dir_var.set(str(args.input_dir) if args.input_dir else "input")
         self.output_dir_var.set(str(args.output_dir) if args.output_dir else "output")
+        self.is_loading_form = False
+
+    def _bind_auto_save(self) -> None:
+        for variable in (self.api_key_var, self.input_dir_var, self.output_dir_var):
+            variable.trace_add("write", lambda *_args: self._schedule_config_save())
+
+    def _schedule_config_save(self) -> None:
+        if self.is_loading_form:
+            return
+        if self.config_save_after_id is not None:
+            self.root.after_cancel(self.config_save_after_id)
+        self.config_save_after_id = self.root.after(700, self._save_current_config)
+
+    def _save_current_config(self) -> None:
+        self.config_save_after_id = None
+        save_config(self.config_path, namespace_to_config(self._build_args()))
+
+    def _on_close(self) -> None:
+        if self.config_save_after_id is not None:
+            self.root.after_cancel(self.config_save_after_id)
+            self.config_save_after_id = None
+        self._save_current_config()
+        self.root.destroy()
 
     def _show_initial_guidance(self) -> None:
         self.log_text.delete("1.0", "end")
