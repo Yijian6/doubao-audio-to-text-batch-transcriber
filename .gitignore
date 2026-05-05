@@ -5,6 +5,10 @@ output/*
 !output/.gitkeep
 __pycache__/
 *.pyc
+build/
+dist/
+release/
+*.spec
 assets/*.mp4
 assets/Snipaste_*.png
 assets/screenshots/shot-*.png
